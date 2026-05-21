@@ -7,15 +7,29 @@ export function makeId() {
   return crypto.randomUUID();
 }
 
-// JSON 形式でレスポンスを返す
+// CORS ヘッダー（iOSアプリからのアクセスも許可）
+export const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Token',
+  'Access-Control-Max-Age': '86400',
+};
+
+// JSON 形式でレスポンスを返す（CORS付き）
 export function jsonResponse(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control': 'no-store',
+      ...CORS_HEADERS,
     },
   });
+}
+
+// OPTIONS（プリフライト）対応 - 全API共通
+export function onRequestOptions() {
+  return new Response(null, { headers: CORS_HEADERS });
 }
 
 // エラーレスポンス

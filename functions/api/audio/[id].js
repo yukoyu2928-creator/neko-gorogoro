@@ -1,7 +1,7 @@
 // GET /api/audio/[id]
 // 公開された猫の音声ファイルを配信
 
-import { errorResponse } from '../../_lib.js';
+import { errorResponse, CORS_HEADERS } from '../../_lib.js';
 
 export async function onRequestGet(context) {
   const { env, params } = context;
@@ -33,6 +33,7 @@ export async function onRequestGet(context) {
       'Content-Type': meta.audioType || 'audio/mpeg',
       'Cache-Control': 'public, max-age=3600',
       'Accept-Ranges': 'bytes',
+      ...CORS_HEADERS,
     },
   });
 }

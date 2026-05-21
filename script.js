@@ -284,6 +284,17 @@ let musicPlayingIndex = null;    // 再生中の音楽のindex（なければnul
 let communityCats = [];          // 「みんなの猫」一覧
 let communityPlayingId = null;   // 「みんなの猫」で再生中のID
 
+// 📡 APIのベースURL
+//   - Web（Cloudflare Pages上）: 空文字 → 相対URL（/api/...）
+//   - iOSアプリ（Capacitor）or ローカル（file://）: フルURL
+const API_BASE = (() => {
+  const p = window.location.protocol;
+  if (p === 'capacitor:' || p === 'file:' || p === 'ionic:') {
+    return 'https://neko-gorogoro.pages.dev';
+  }
+  return '';  // 同一オリジン
+})();
+
 // ============================================
 // 5. 猫リストの表示
 // ============================================
@@ -502,7 +513,7 @@ async function loadCommunityList() {
   communityLoading = true;
   el.communityStatus.textContent = '読み込み中...';
   try {
-    const res = await fetch('/api/list');
+    const res = await fetch(`${API_BASE}/api/list`);
     if (!res.ok) throw new Error('読み込みに失敗');
     const data = await res.json();
     communityCats = data.cats || [];
@@ -538,7 +549,7 @@ function renderCommunityList() {
   el.communityList.innerHTML = communityCats.map((cat) => {
     const isPlaying = communityPlayingId === cat.id;
     const photoHtml = cat.hasPhoto
-      ? `<img src="/api/photo/${escapeHtml(cat.id)}" alt="${escapeHtml(cat.name)}" loading="lazy" />`
+      ? `<img src="${API_BASE}/api/photo/${escapeHtml(cat.id)}" alt="${escapeHtml(cat.name)}" loading="lazy" />`
       : '🐱';
     const breedHtml = cat.breed
       ? `<div class="cat-meta">${escapeHtml(cat.breed)}</div>`
@@ -580,7 +591,7 @@ function togglePlayCommunity(id) {
 
 function startCommunityPlayback(id) {
   stopPlayback();
-  const audio = new Audio(`/api/audio/${id}`);
+  const audio = new Audio(`${API_BASE}/api/audio/${id}`);
   audio.loop = true;
   audio.volume = state.volume;
   audio.play().catch((err) => {
@@ -634,7 +645,7 @@ async function submitUpload(e) {
     formData.append('audio', audioFile);
     if (photoFile) formData.append('photo', photoFile);
 
-    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+    const res = await fetch(`${API_BASE}/api/upload`, { method: 'POST', body: formData });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || '投稿に失敗しました');
 
