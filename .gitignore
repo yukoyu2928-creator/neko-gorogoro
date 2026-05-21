@@ -41,3 +41,10 @@ IMG_7632.JPG
 64163F10*.jpg
 IMG_7632_gray.jpg
 IMG_*.jpg
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
