@@ -91,25 +91,106 @@
       </p>
     </section>
 
-    <!-- 「みんなの猫」コミュニティタブ：近日公開プレースホルダー -->
-    <section class="community-coming-soon is-hidden" id="community-section">
-      <div class="community-icon">🌍</div>
-      <h2 class="community-title">みんなの猫、近日公開！</h2>
-      <p class="community-lead">
-        世界中のねこちゃんのゴロゴロが<br />
-        集まる、癒しのコミュニティ
-      </p>
-      <ul class="community-features">
-        <li>📤 あなたの愛猫の音を投稿できる</li>
-        <li>🎵 他の人の癒しの音を聴ける</li>
-        <li>⭐ お気に入りに登録して保存</li>
-        <li>🤖 AIで自動的に安全チェック</li>
-      </ul>
-      <div class="community-cta">
-        <p class="cta-hint">準備中です。お楽しみに！</p>
-        <p class="cta-sub">公開時期: 検討中（数ヶ月後を予定）</p>
+    <!-- 「みんなの猫」コミュニティタブ：実機能版 -->
+    <section class="community-section is-hidden" id="community-section">
+      <div class="community-actions">
+        <button class="btn btn-save community-upload-btn" id="community-upload-btn">
+          📤 私の愛猫を投稿
+        </button>
+        <button class="btn btn-cancel community-refresh-btn" id="community-refresh-btn" title="更新">
+          🔄
+        </button>
+      </div>
+
+      <div class="community-status" id="community-status"></div>
+
+      <!-- 公開済み投稿の一覧 -->
+      <div class="community-list" id="community-list">
+        <!-- ここにJavaScriptで投稿カードが追加されます -->
       </div>
     </section>
+
+    <!-- 投稿フォーム（モーダル） -->
+    <div class="modal" id="upload-modal" hidden>
+      <div class="modal-overlay" id="upload-modal-overlay"></div>
+      <div class="modal-content" role="dialog" aria-labelledby="upload-modal-title">
+        <h2 class="modal-title" id="upload-modal-title">愛猫の音を投稿</h2>
+
+        <p class="upload-intro">
+          みんなの癒しに使われます🐾<br />
+          <small>※ 運営者の確認後に公開されます</small>
+        </p>
+
+        <form id="upload-form">
+          <div class="form-group">
+            <label for="upload-name" class="form-label">
+              猫の名前 <span class="required">*</span>
+            </label>
+            <input type="text" id="upload-name" name="name" class="form-input"
+                   placeholder="例：ミケちゃん" required maxlength="30" />
+          </div>
+
+          <div class="form-group">
+            <label for="upload-breed" class="form-label">猫の種類（任意）</label>
+            <input type="text" id="upload-breed" name="breed" class="form-input"
+                   placeholder="例：三毛猫、シャム、雑種など" maxlength="30" />
+          </div>
+
+          <div class="form-group">
+            <label for="upload-description" class="form-label">説明・エピソード（任意）</label>
+            <textarea id="upload-description" name="description" class="form-input"
+                      placeholder="例：3歳の女の子、お昼寝中のゴロゴロ"
+                      maxlength="200" rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="upload-photo" class="form-label">写真（任意）</label>
+            <div class="photo-preview" id="upload-photo-preview">
+              <span class="photo-placeholder">🐱</span>
+            </div>
+            <input type="file" id="upload-photo" name="photo"
+                   class="form-file" accept="image/*" />
+            <p class="form-hint">5MB以下のjpg/png</p>
+          </div>
+
+          <div class="form-group">
+            <label for="upload-audio" class="form-label">
+              ゴロゴロ音 <span class="required">*</span>
+            </label>
+            <div class="audio-preview" id="upload-audio-preview">
+              <span class="audio-status">音声ファイルを選んでください</span>
+            </div>
+            <input type="file" id="upload-audio" name="audio"
+                   class="form-file" accept="audio/*" required />
+            <p class="form-hint">10MB以下のmp3/m4a/wav/ogg</p>
+          </div>
+
+          <div class="form-group">
+            <label for="upload-email" class="form-label">
+              連絡用メール（任意）
+            </label>
+            <input type="email" id="upload-email" name="email" class="form-input"
+                   placeholder="あれば公開時にお知らせします（公開はしません）"
+                   maxlength="200" />
+            <p class="form-hint">公開はされません。連絡用です。</p>
+          </div>
+
+          <p class="upload-policy">
+            投稿することで、<a href="terms.html" target="_blank">利用規約</a>と
+            <a href="privacy.html" target="_blank">プライバシーポリシー</a>に同意したものとみなします。
+          </p>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-cancel" id="upload-cancel-btn">
+              キャンセル
+            </button>
+            <button type="submit" class="btn btn-save" id="upload-submit-btn">
+              📤 投稿する
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- フッター：管理ボタンとクレジット -->
     <footer class="app-footer">

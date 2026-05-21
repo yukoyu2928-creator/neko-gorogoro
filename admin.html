@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理画面 🐾 ねこゴロゴロ癒し</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .admin-wrapper {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+    .admin-card {
+      background: var(--color-card);
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-soft);
+      border: 2px solid var(--color-border);
+    }
+    .admin-card h2 {
+      color: var(--color-accent-dark);
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+    .login-form input {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+    .pending-item {
+      display: flex;
+      gap: 14px;
+      padding: 14px;
+      background: var(--color-card);
+      border-radius: var(--radius-md);
+      border: 2px solid var(--color-border);
+      margin-bottom: 12px;
+      align-items: flex-start;
+    }
+    .pending-item .photo {
+      width: 60px;
+      height: 60px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #fff5f1, #ffe4e9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      border: 2px solid white;
+    }
+    .pending-item .photo img { width: 100%; height: 100%; object-fit: cover; }
+    .pending-item .info { flex: 1; min-width: 0; }
+    .pending-item .info .name { font-weight: 700; font-size: 16px; }
+    .pending-item .info .breed { font-size: 12px; color: var(--color-text-soft); margin-top: 2px; }
+    .pending-item .info .desc { font-size: 12px; color: var(--color-text-soft); margin-top: 6px; line-height:1.5; }
+    .pending-item .info audio { width: 100%; margin-top: 8px; }
+    .pending-item .actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+    .pending-item .btn { padding: 6px 14px; font-size: 12px; }
+    .empty-msg { text-align: center; padding: 40px; color: var(--color-text-soft); }
+    .logout-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 6px 12px;
+      font-size: 12px;
+      background: white;
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      color: var(--color-text-soft);
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1>🔑 管理画面</h1>
+    <p class="subtitle">ゆゆさん専用ページ</p>
+  </header>
+
+  <main class="admin-wrapper">
+
+    <!-- ログイン前 -->
+    <div id="login-section" class="admin-card">
+      <h2>パスワードでログイン</h2>
+      <form id="login-form" class="login-form">
+        <input type="password" class="form-input" id="admin-password" placeholder="管理パスワード" required />
+        <button type="submit" class="btn btn-save" style="width:100%">ログイン</button>
+      </form>
+      <p style="font-size:12px;color:var(--color-text-soft);margin-top:12px;text-align:center;">
+        パスワードはブラウザに保存されます<br>
+        （他人と共有するMacでは使わないでください）
+      </p>
+    </div>
+
+    <!-- ログイン後 -->
+    <div id="dashboard-section" style="display:none">
+      <button id="logout-btn" class="logout-btn">ログアウト</button>
+
+      <div class="admin-card" style="position:relative">
+        <h2>📋 承認待ちの投稿 <span id="pending-count"></span></h2>
+        <button class="btn btn-cancel" id="refresh-btn" style="font-size:12px;padding:6px 14px">🔄 更新</button>
+        <div id="pending-list" style="margin-top:14px">
+          <div class="empty-msg">読み込み中...</div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h2>✅ 公開済みの投稿 <span id="published-count"></span></h2>
+        <button class="btn btn-cancel" id="refresh-published-btn" style="font-size:12px;padding:6px 14px">🔄 更新</button>
+        <div id="published-list" style="margin-top:14px">
+          <div class="empty-msg">読み込み中...</div>
+        </div>
+      </div>
+
+      <p style="text-align:center;margin-top:16px">
+        <a href="index.html" style="color:var(--color-accent-dark);font-size:13px">← アプリに戻る</a>
+      </p>
+    </div>
+
+  </main>
+
+  <script>
+    const PASSWORD_KEY = 'neko_admin_password';
+
+    const els = {
+      loginSection: document.getElementById('login-section'),
+      dashboard: document.getElementById('dashboard-section'),
+      loginForm: document.getElementById('login-form'),
+      passwordInput: document.getElementById('admin-password'),
+      logoutBtn: document.getElementById('logout-btn'),
+      pendingList: document.getElementById('pending-list'),
+      pendingCount: document.getElementById('pending-count'),
+      publishedList: document.getElementById('published-list'),
+      publishedCount: document.getElementById('published-count'),
+      refreshBtn: document.getElementById('refresh-btn'),
+      refreshPublishedBtn: document.getElementById('refresh-published-btn'),
+    };
+
+    function getPassword() { return localStorage.getItem(PASSWORD_KEY) || ''; }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    async function apiCall(path, method = 'GET', body = null) {
+      const opts = {
+        method,
+        headers: { 'X-Admin-Token': getPassword() },
+      };
+      if (body) {
+        opts.headers['Content-Type'] = 'application/json';
+        opts.body = JSON.stringify(body);
+      }
+      const res = await fetch(path, opts);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'エラーが発生しました');
+      return data;
+    }
+
+    async function loadPending() {
+      els.pendingList.innerHTML = '<div class="empty-msg">読み込み中...</div>';
+      try {
+        const data = await apiCall('/api/admin/pending');
+        els.pendingCount.textContent = `(${data.count})`;
+        if (data.count === 0) {
+          els.pendingList.innerHTML = '<div class="empty-msg">承認待ちはありません🌸</div>';
+          return;
+        }
+        els.pendingList.innerHTML = data.cats.map((cat) => {
+          const audioUrl = `/${cat.audioKey}`;
+          const photoHtml = cat.photoKey
+            ? `<img src="/${cat.photoKey}" alt="${escapeHtml(cat.name)}" />`
+            : '🐱';
+          return `
+            <div class="pending-item">
+              <div class="photo">${photoHtml}</div>
+              <div class="info">
+                <div class="name">${escapeHtml(cat.name)}</div>
+                <div class="breed">${escapeHtml(cat.breed || '')}</div>
+                <div class="desc">${escapeHtml(cat.description || '')}</div>
+                <audio controls preload="none" src="${audioUrl}"></audio>
+                <div style="font-size:10px;color:var(--color-text-soft);margin-top:6px">
+                  投稿: ${new Date(cat.uploadedAt).toLocaleString('ja-JP')}<br>
+                  ${cat.uploaderEmail ? `連絡先: ${escapeHtml(cat.uploaderEmail)}` : ''}
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-save" onclick="approve('${cat.id}')">✅承認</button>
+                <button class="btn btn-delete" onclick="reject('${cat.id}')">🗑却下</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        if (String(err.message).includes('管理者認証')) {
+          alert('パスワードが間違っています');
+          logout();
+          return;
+        }
+        els.pendingList.innerHTML = `<div class="empty-msg">エラー: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    async function loadPublished() {
+      els.publishedList.innerHTML = '<div class="empty-msg">読み込み中...</div>';
+      try {
+        const res = await fetch('/api/list');
+        const data = await res.json();
+        els.publishedCount.textContent = `(${data.count})`;
+        if (data.count === 0) {
+          els.publishedList.innerHTML = '<div class="empty-msg">公開済みはまだありません</div>';
+          return;
+        }
+        els.publishedList.innerHTML = data.cats.map((cat) => {
+          const photoHtml = cat.hasPhoto
+            ? `<img src="/api/photo/${escapeHtml(cat.id)}" alt="${escapeHtml(cat.name)}" />`
+            : '🐱';
+          return `
+            <div class="pending-item">
+              <div class="photo">${photoHtml}</div>
+              <div class="info">
+                <div class="name">${escapeHtml(cat.name)}</div>
+                <div class="breed">${escapeHtml(cat.breed || '')}</div>
+                <div class="desc">${escapeHtml(cat.description || '')}</div>
+                <audio controls preload="none" src="/api/audio/${escapeHtml(cat.id)}"></audio>
+                <div style="font-size:10px;color:var(--color-text-soft);margin-top:6px">
+                  公開: ${new Date(cat.publishedAt).toLocaleString('ja-JP')}
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-delete" onclick="deletePublished('${cat.id}')">🗑削除</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        els.publishedList.innerHTML = `<div class="empty-msg">エラー: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    window.approve = async function(id) {
+      if (!confirm('この投稿を「みんなの猫」に公開しますか？')) return;
+      try {
+        await apiCall('/api/admin/approve', 'POST', { id });
+        alert('公開しました🎉');
+        loadPending();
+        loadPublished();
+      } catch (err) {
+        alert(`エラー: ${err.message}`);
+      }
+    };
+
+    window.reject = async function(id) {
+      if (!confirm('この投稿を完全に削除しますか？（元に戻せません）')) return;
+      try {
+        await apiCall('/api/admin/reject', 'POST', { id });
+        alert('却下しました');
+        loadPending();
+      } catch (err) {
+        alert(`エラー: ${err.message}`);
+      }
+    };
+
+    window.deletePublished = async function(id) {
+      if (!confirm('公開済みの投稿を完全に削除しますか？（元に戻せません）')) return;
+      try {
+        await apiCall('/api/admin/delete-published', 'POST', { id });
+        alert('削除しました');
+        loadPublished();
+      } catch (err) {
+        alert(`エラー: ${err.message}`);
+      }
+    };
+
+    function showDashboard() {
+      els.loginSection.style.display = 'none';
+      els.dashboard.style.display = 'block';
+      loadPending();
+      loadPublished();
+    }
+
+    function showLogin() {
+      els.loginSection.style.display = 'block';
+      els.dashboard.style.display = 'none';
+    }
+
+    function logout() {
+      localStorage.removeItem(PASSWORD_KEY);
+      showLogin();
+    }
+
+    els.loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pwd = els.passwordInput.value.trim();
+      if (!pwd) return;
+      localStorage.setItem(PASSWORD_KEY, pwd);
+      // 認証チェック
+      try {
+        await apiCall('/api/admin/pending');
+        showDashboard();
+      } catch (err) {
+        alert('パスワードが違うか、サーバー側の設定が完了していません');
+        logout();
+      }
+    });
+    els.logoutBtn.addEventListener('click', logout);
+    els.refreshBtn.addEventListener('click', loadPending);
+    els.refreshPublishedBtn.addEventListener('click', loadPublished);
+
+    // 自動ログイン（パスワード保存済み）
+    if (getPassword()) {
+      showDashboard();
+    }
+  </script>
+</body>
+</html>

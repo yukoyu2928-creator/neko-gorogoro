@@ -362,6 +362,102 @@ select:focus {
   color: var(--color-accent-dark);
 }
 
+/* 「みんなの猫」実機能セクション */
+.community-section {
+  margin-top: 8px;
+}
+
+.community-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  align-items: stretch;
+}
+
+.community-upload-btn {
+  flex: 1;
+}
+
+.community-refresh-btn {
+  min-width: 50px;
+  padding: 12px 16px !important;
+  font-size: 18px !important;
+}
+
+.community-status {
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-soft);
+  padding: 8px;
+  min-height: 20px;
+}
+
+.community-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.community-empty {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  border: 3px dashed var(--color-border);
+}
+
+.community-empty .empty-emoji {
+  font-size: 64px;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.community-empty .empty-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 12px;
+}
+
+.community-empty .empty-hint {
+  font-size: 13px;
+  color: var(--color-text-soft);
+  margin-top: 8px;
+}
+
+/* 投稿モーダル：説明・規約 */
+.upload-intro {
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-soft);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.upload-intro small {
+  color: var(--color-accent-dark);
+  font-weight: 700;
+}
+
+.upload-policy {
+  font-size: 11px;
+  color: var(--color-text-soft);
+  margin-top: 12px;
+  padding: 10px;
+  background: linear-gradient(135deg, #fff5f1 0%, #ffe4e9 100%);
+  border-radius: var(--radius-md);
+  line-height: 1.6;
+}
+
+.upload-policy a {
+  color: var(--color-accent-dark);
+  text-decoration: underline;
+}
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+
 /* 「みんなの猫」近日公開プレースホルダー */
 .community-coming-soon {
   background: var(--color-card);

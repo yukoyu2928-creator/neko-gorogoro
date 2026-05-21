@@ -247,6 +247,24 @@ const el = {
   themeToggle: document.getElementById('theme-toggle'),
   modalDeleteSection: document.getElementById('modal-delete-section'),
   modalDeleteBtn: document.getElementById('modal-delete-btn'),
+  // みんなの猫
+  communityList: document.getElementById('community-list'),
+  communityStatus: document.getElementById('community-status'),
+  communityUploadBtn: document.getElementById('community-upload-btn'),
+  communityRefreshBtn: document.getElementById('community-refresh-btn'),
+  uploadModal: document.getElementById('upload-modal'),
+  uploadModalOverlay: document.getElementById('upload-modal-overlay'),
+  uploadForm: document.getElementById('upload-form'),
+  uploadName: document.getElementById('upload-name'),
+  uploadBreed: document.getElementById('upload-breed'),
+  uploadDescription: document.getElementById('upload-description'),
+  uploadPhoto: document.getElementById('upload-photo'),
+  uploadAudio: document.getElementById('upload-audio'),
+  uploadEmail: document.getElementById('upload-email'),
+  uploadPhotoPreview: document.getElementById('upload-photo-preview'),
+  uploadAudioPreview: document.getElementById('upload-audio-preview'),
+  uploadCancelBtn: document.getElementById('upload-cancel-btn'),
+  uploadSubmitBtn: document.getElementById('upload-submit-btn'),
 };
 
 // ============================================
@@ -263,19 +281,22 @@ const editing = {
 let pendingConfirm = null;       // 確認ダイアログのコールバック
 let pendingShareCatId = null;    // 共有メニューが開いてる猫のID
 let musicPlayingIndex = null;    // 再生中の音楽のindex（なければnull）
+let communityCats = [];          // 「みんなの猫」一覧
+let communityPlayingId = null;   // 「みんなの猫」で再生中のID
 
 // ============================================
 // 5. 猫リストの表示
 // ============================================
 
 function render() {
-  // 「みんなの猫」モード（近日公開プレースホルダー）
+  // 「みんなの猫」モード
   if (state.filter === 'community') {
     el.catList.innerHTML = '';
     el.musicList.classList.add('is-hidden');
     el.emptyState.classList.add('is-hidden');
     el.communitySection.classList.remove('is-hidden');
     if (el.addBtnEl) el.addBtnEl.classList.add('is-hidden');
+    renderCommunityList();
     return;
   }
 
@@ -463,8 +484,168 @@ function stopPlayback() {
   }
   state.currentlyPlayingId = null;
   musicPlayingIndex = null;
+  communityPlayingId = null;
   stopTimer();
   render();
+}
+
+// ============================================
+// 6.7 みんなの猫モード
+// ============================================
+
+// 起動時のステータス
+let communityLoaded = false;
+let communityLoading = false;
+
+async function loadCommunityList() {
+  if (communityLoading) return;
+  communityLoading = true;
+  el.communityStatus.textContent = '読み込み中...';
+  try {
+    const res = await fetch('/api/list');
+    if (!res.ok) throw new Error('読み込みに失敗');
+    const data = await res.json();
+    communityCats = data.cats || [];
+    communityLoaded = true;
+    el.communityStatus.textContent = `${communityCats.length}匹の癒し音`;
+    renderCommunityList();
+  } catch (err) {
+    el.communityStatus.textContent = '読み込みエラー：通信を確認してください';
+    console.error('community load error:', err);
+  } finally {
+    communityLoading = false;
+  }
+}
+
+function renderCommunityList() {
+  if (!communityLoaded) {
+    // 初回ロード
+    loadCommunityList();
+    return;
+  }
+
+  if (communityCats.length === 0) {
+    el.communityList.innerHTML = `
+      <div class="community-empty">
+        <div class="empty-emoji">🐾</div>
+        <p class="empty-title">まだ投稿がありません</p>
+        <p class="empty-hint">あなたが最初の投稿者になってみませんか？<br>「📤 私の愛猫を投稿」ボタンから✨</p>
+      </div>
+    `;
+    return;
+  }
+
+  el.communityList.innerHTML = communityCats.map((cat) => {
+    const isPlaying = communityPlayingId === cat.id;
+    const photoHtml = cat.hasPhoto
+      ? `<img src="/api/photo/${escapeHtml(cat.id)}" alt="${escapeHtml(cat.name)}" loading="lazy" />`
+      : '🐱';
+    const breedHtml = cat.breed
+      ? `<div class="cat-meta">${escapeHtml(cat.breed)}</div>`
+      : '';
+    return `
+      <article class="cat-card ${isPlaying ? 'is-playing' : ''}" data-community-id="${escapeHtml(cat.id)}">
+        <button class="cat-photo cat-photo-btn" data-community-action="play"
+                aria-label="${escapeHtml(cat.name)}を再生">${photoHtml}</button>
+        <div class="cat-info">
+          <div class="cat-name">${escapeHtml(cat.name)}</div>
+          ${breedHtml}
+          ${cat.description ? `<div class="cat-meta" style="background:transparent;padding:2px 0;color:var(--color-text-soft);font-weight:400">${escapeHtml(cat.description)}</div>` : ''}
+        </div>
+        <div class="cat-actions">
+          <button class="icon-btn play-btn" data-community-action="play" aria-label="再生・停止">
+            ${isPlaying ? '⏸' : '▶'}
+          </button>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  // イベントバインド
+  el.communityList.querySelectorAll('.cat-card').forEach((card) => {
+    const id = card.dataset.communityId;
+    card.querySelectorAll('[data-community-action]').forEach((btn) => {
+      btn.addEventListener('click', () => togglePlayCommunity(id));
+    });
+  });
+}
+
+function togglePlayCommunity(id) {
+  if (communityPlayingId === id) {
+    stopPlayback();
+  } else {
+    startCommunityPlayback(id);
+  }
+}
+
+function startCommunityPlayback(id) {
+  stopPlayback();
+  const audio = new Audio(`/api/audio/${id}`);
+  audio.loop = true;
+  audio.volume = state.volume;
+  audio.play().catch((err) => {
+    console.error('community play error:', err);
+    alert('再生に失敗しました 😿');
+  });
+  state.audioElement = audio;
+  communityPlayingId = id;
+  startTimerIfNeeded();
+  render();
+}
+
+// ============================================
+// 6.8 投稿フォーム
+// ============================================
+
+function openUploadModal() {
+  el.uploadForm.reset();
+  el.uploadPhotoPreview.innerHTML = '<span class="photo-placeholder">🐱</span>';
+  el.uploadAudioPreview.innerHTML = '<span class="audio-status">音声ファイルを選んでください</span>';
+  el.uploadModal.hidden = false;
+}
+
+function closeUploadModal() {
+  el.uploadModal.hidden = true;
+}
+
+async function submitUpload(e) {
+  e.preventDefault();
+  const name = el.uploadName.value.trim();
+  const breed = el.uploadBreed.value.trim();
+  const description = el.uploadDescription.value.trim();
+  const email = el.uploadEmail.value.trim();
+  const photoFile = el.uploadPhoto.files[0];
+  const audioFile = el.uploadAudio.files[0];
+
+  if (!name) { alert('猫の名前を入力してください'); return; }
+  if (!audioFile) { alert('音声ファイルを選んでください'); return; }
+  if (audioFile.size > 10 * 1024 * 1024) { alert('音声は10MB以下にしてください'); return; }
+  if (photoFile && photoFile.size > 5 * 1024 * 1024) { alert('写真は5MB以下にしてください'); return; }
+
+  el.uploadSubmitBtn.disabled = true;
+  el.uploadSubmitBtn.textContent = '送信中...';
+
+  try {
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('breed', breed);
+    formData.append('description', description);
+    formData.append('email', email);
+    formData.append('audio', audioFile);
+    if (photoFile) formData.append('photo', photoFile);
+
+    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || '投稿に失敗しました');
+
+    alert(`✨ ${data.message}\n\n運営者の確認後、「みんなの猫」に表示されます🐾`);
+    closeUploadModal();
+  } catch (err) {
+    alert(`投稿失敗: ${err.message || err}`);
+  } finally {
+    el.uploadSubmitBtn.disabled = false;
+    el.uploadSubmitBtn.textContent = '📤 投稿する';
+  }
 }
 
 // ============================================
@@ -1291,6 +1472,42 @@ async function init() {
       // モーダルを閉じてから削除確認
       closeModal();
       confirmDeleteCat(catId);
+    });
+  }
+
+  // ===== みんなの猫 =====
+  if (el.communityUploadBtn) {
+    el.communityUploadBtn.addEventListener('click', openUploadModal);
+  }
+  if (el.communityRefreshBtn) {
+    el.communityRefreshBtn.addEventListener('click', () => {
+      communityLoaded = false;
+      loadCommunityList();
+    });
+  }
+  if (el.uploadCancelBtn) {
+    el.uploadCancelBtn.addEventListener('click', closeUploadModal);
+  }
+  if (el.uploadModalOverlay) {
+    el.uploadModalOverlay.addEventListener('click', closeUploadModal);
+  }
+  if (el.uploadForm) {
+    el.uploadForm.addEventListener('submit', submitUpload);
+  }
+  if (el.uploadPhoto) {
+    el.uploadPhoto.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      el.uploadPhotoPreview.innerHTML = `<img src="${url}" alt="プレビュー" />`;
+    });
+  }
+  if (el.uploadAudio) {
+    el.uploadAudio.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      el.uploadAudioPreview.innerHTML =
+        `<span class="audio-status has-file">${escapeHtml(file.name)}</span>`;
     });
   }
 }
