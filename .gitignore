@@ -1,0 +1,43 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temp files
+*.tmp
+*.bak
+*~
+
+# Python cache (中間生成スクリプトの跡)
+__pycache__/
+*.pyc
+
+# QRコード（毎回作り直すから）
+phone-access-qr.png
+
+# 中間生成フォルダ（最終版だけで十分）
+sketch-cats/
+cats-clean/
+
+# プレビューHTML（開発用）
+phone-access.html
+icon-compare.html
+icon-preview.html
+icon-white-compare.html
+cats-clean-preview.html
+sketch-cats-preview.html
+sketch-best.html
+
+# 元の写真（中間素材）
+IMG_3833.PNG
+IMG_7632.JPG
+64163F10*.jpg
+IMG_7632_gray.jpg
+IMG_*.jpg

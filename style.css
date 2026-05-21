@@ -1,0 +1,1401 @@
+/* ============================================
+   🐾 ねこゴロゴロ癒し — ふんわり可愛いデザイン 🌸
+   ============================================ */
+
+/* カラーパレット（色のテーマ）と基本変数 */
+:root {
+  --color-bg-1: #fff5f1;       /* 背景の上：クリーム */
+  --color-bg-2: #ffe4e9;       /* 背景の下：薄ピンク */
+  --color-card: #ffffff;       /* カードの背景：白 */
+  --color-accent: #ff9eae;     /* アクセント：ピンク */
+  --color-accent-dark: #ef7d92;/* アクセント濃：ピンク */
+  --color-mint: #b8e6d1;       /* ミントグリーン */
+  --color-mint-dark: #6dc8a3;  /* ミント濃 */
+  --color-yellow: #ffd97a;     /* お気に入りの黄色 */
+  --color-text: #4a3838;       /* 本文：温かみのある茶 */
+  --color-text-soft: #8b7878;  /* サブ文字：やさしい茶 */
+  --color-border: #ffd5db;     /* 境界線：薄ピンク */
+  --color-danger: #ff7e7e;     /* 削除ボタン：赤 */
+  --shadow-soft: 0 8px 24px rgba(255, 158, 174, 0.18);
+  --shadow-medium: 0 12px 32px rgba(255, 158, 174, 0.28);
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+}
+
+/* ダークモード（夜のリラックスタイム用・可愛さキープ） */
+[data-theme="dark"] {
+  --color-bg-1: #2d1f24;
+  --color-bg-2: #3a2530;
+  --color-card: #423040;
+  --color-accent: #ff9eae;
+  --color-accent-dark: #ffb8c5;
+  --color-mint: #6dc8a3;
+  --color-mint-dark: #8edcb8;
+  --color-text: #fde8ed;
+  --color-text-soft: #d6b8be;
+  --color-border: #5c3d4c;
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-medium: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* 全部の要素を共通リセット */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 体全体（body）の見た目 */
+body {
+  font-family:
+    "Hiragino Maru Gothic ProN",     /* Mac の丸ゴシック */
+    "Hiragino Sans",
+    "ヒラギノ角ゴ Pro",
+    "Yu Gothic UI",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
+  color: var(--color-text);
+  background:
+    radial-gradient(circle at 10% 10%, #fff8e7 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, #ffe0e8 0%, transparent 40%),
+    linear-gradient(180deg, var(--color-bg-1) 0%, var(--color-bg-2) 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  line-height: 1.6;
+  padding-bottom: 120px;
+  position: relative;
+  overflow-x: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ダークモードの背景は別 */
+[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at 10% 10%, #4a2a35 0%, transparent 40%),
+    radial-gradient(circle at 90% 90%, #3a2535 0%, transparent 40%),
+    linear-gradient(180deg, var(--color-bg-1) 0%, var(--color-bg-2) 100%);
+}
+
+/* 背景に肉球をふわっと散らす */
+body::before {
+  content: "🐾  🐾  🐾  🐾  🐾  🐾";
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 80px;
+  font-size: 32px;
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+  padding: 50px;
+  align-content: space-around;
+  justify-content: space-around;
+  animation: floatPaws 30s linear infinite;
+}
+
+[data-theme="dark"] body::before {
+  opacity: 0.12;
+}
+
+@keyframes floatPaws {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0); }
+}
+
+/* ヘッダー */
+.app-header {
+  text-align: center;
+  padding: 32px 20px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.app-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff9eae 0%, #ffb380 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.05em;
+  animation: bounce 3s ease-in-out infinite;
+}
+
+/* タイトル横の白猫ちゃん */
+.title-cat {
+  width: 38px;
+  height: 38px;
+  vertical-align: middle;
+  margin-right: 8px;
+  margin-top: -4px;
+  display: inline-block;
+  animation: bounce 3s ease-in-out infinite;
+}
+
+[data-theme="dark"] .title-cat {
+  filter: brightness(1.1);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--color-text-soft);
+  margin-top: 8px;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* テーマ切り替えボタン（右上） */
+.theme-toggle {
+  position: absolute;
+  top: 24px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--color-border);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.12) rotate(15deg);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-medium);
+}
+
+[data-theme="dark"] .theme-toggle {
+  background: var(--color-card);
+}
+
+/* メインコンテンツ */
+.app-main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* コントロールパネル */
+.controls {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-soft);
+  border: 2px solid var(--color-border);
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.control-row + .control-row {
+  border-top: 1px dashed var(--color-border);
+  margin-top: 6px;
+  padding-top: 14px;
+}
+
+.control-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 90px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.control-icon {
+  font-size: 18px;
+}
+
+.control-value {
+  font-size: 13px;
+  color: var(--color-text-soft);
+  min-width: 56px;
+  text-align: right;
+}
+
+/* 音量スライダー */
+input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(to right, var(--color-accent) 0%, var(--color-accent) 70%, var(--color-border) 70%, var(--color-border) 100%);
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--color-accent);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(255, 158, 174, 0.4);
+  transition: transform 0.15s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--color-accent);
+  cursor: pointer;
+}
+
+/* タイマーの選択ボックス */
+select {
+  flex: 1;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: white;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+[data-theme="dark"] select {
+  background: var(--color-card);
+}
+
+select:hover,
+select:focus {
+  border-color: var(--color-accent);
+}
+
+/* フィルターボタン */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
+.filter-btn {
+  flex: 1;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-soft);
+  background: white;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+[data-theme="dark"] .filter-btn {
+  background: var(--color-card);
+}
+
+.filter-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-dark);
+}
+
+.filter-btn.is-active {
+  background: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+  box-shadow: 0 4px 12px rgba(255, 158, 174, 0.3);
+}
+
+/* 「近日」バッジ */
+.badge-soon {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-yellow) 0%, #ffb84d 100%);
+  color: #5a4320;
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
+  margin-left: 4px;
+  vertical-align: middle;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  animation: gentleShine 2s ease-in-out infinite;
+}
+
+@keyframes gentleShine {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.04); }
+}
+
+.filter-btn.is-active .badge-soon {
+  background: white;
+  color: var(--color-accent-dark);
+}
+
+/* 「みんなの猫」近日公開プレースホルダー */
+.community-coming-soon {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 40px 24px;
+  text-align: center;
+  border: 3px dashed var(--color-border);
+  box-shadow: var(--shadow-soft);
+  position: relative;
+  overflow: hidden;
+}
+
+.community-coming-soon::before {
+  content: "✨";
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.community-coming-soon::after {
+  content: "🌸";
+  position: absolute;
+  bottom: 15px;
+  left: 20px;
+  font-size: 22px;
+  animation: twinkle 3s ease-in-out infinite 1.5s;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.6; transform: rotate(0deg); }
+  50% { opacity: 1; transform: rotate(15deg); }
+}
+
+.community-icon {
+  font-size: 64px;
+  animation: bounce 3s ease-in-out infinite;
+  display: inline-block;
+}
+
+.community-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 12px;
+  background: linear-gradient(135deg, #ff9eae 0%, #ffb380 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.05em;
+}
+
+.community-lead {
+  font-size: 14px;
+  color: var(--color-text-soft);
+  margin-top: 10px;
+  line-height: 1.8;
+}
+
+.community-features {
+  list-style: none;
+  text-align: left;
+  margin: 24px auto;
+  max-width: 280px;
+  padding: 0;
+}
+
+.community-features li {
+  font-size: 14px;
+  color: var(--color-text);
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff5f1 0%, #ffe4e9 100%);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+[data-theme="dark"] .community-features li {
+  background: linear-gradient(135deg, #4a2a35 0%, #3a2530 100%);
+}
+
+.community-features li:hover {
+  transform: translateX(4px);
+}
+
+.community-cta {
+  margin-top: 20px;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--color-mint) 0%, var(--color-mint-dark) 100%);
+  border-radius: var(--radius-md);
+  color: white;
+}
+
+.cta-hint {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.cta-sub {
+  font-size: 12px;
+  opacity: 0.95;
+}
+
+/* 猫リスト */
+.cat-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+/* 猫のカード */
+.cat-card {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  transition: all 0.3s ease;
+  animation: cardIn 0.4s ease-out;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+.cat-card.is-playing {
+  border-color: var(--color-mint-dark);
+  background: linear-gradient(135deg, var(--color-card) 0%, rgba(184, 230, 209, 0.3) 100%);
+  box-shadow: 0 8px 24px rgba(109, 200, 163, 0.3);
+}
+
+.cat-card.is-playing::after {
+  content: "♪";
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  font-size: 24px;
+  color: var(--color-mint-dark);
+  animation: notes 1.5s ease-in-out infinite;
+}
+
+@keyframes notes {
+  0%, 100% { transform: translateY(0) rotate(-5deg); opacity: 0.8; }
+  50% { transform: translateY(-6px) rotate(5deg); opacity: 1; }
+}
+
+/* 猫の写真（または絵文字） */
+.cat-photo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fff5f1 0%, #ffe4e9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  flex-shrink: 0;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(255, 158, 174, 0.2);
+  overflow: hidden;
+}
+
+[data-theme="dark"] .cat-photo {
+  background: linear-gradient(135deg, #4a2a35 0%, #3a2530 100%);
+  border-color: var(--color-card);
+}
+
+.cat-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 🐾 猫がふわふわ浮いてる動き（待機中の標準アニメーション） */
+@keyframes catFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-3px) rotate(-1deg);
+  }
+}
+
+.cat-photo {
+  animation: catFloat 3.5s ease-in-out infinite;
+}
+
+/* 同期しないよう、各カードで少しずつタイミングずらす */
+.cat-card:nth-child(2n) .cat-photo { animation-delay: 0.4s; }
+.cat-card:nth-child(3n) .cat-photo { animation-delay: 0.8s; }
+.cat-card:nth-child(4n) .cat-photo { animation-delay: 1.2s; }
+.cat-card:nth-child(5n) .cat-photo { animation-delay: 1.6s; }
+.cat-card:nth-child(6n) .cat-photo { animation-delay: 2.0s; }
+.cat-card:nth-child(7n) .cat-photo { animation-delay: 0.6s; animation-duration: 4s; }
+
+/* 猫の写真がボタンになっている時（タップで再生） */
+.cat-photo-btn {
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.cat-photo-btn:hover {
+  animation: catWiggleHover 0.6s ease-in-out infinite;
+  box-shadow: 0 8px 20px rgba(255, 158, 174, 0.4);
+  border-color: var(--color-mint);
+}
+
+@keyframes catWiggleHover {
+  0%, 100% { transform: scale(1.08) rotate(-5deg); }
+  50% { transform: scale(1.1) rotate(5deg); }
+}
+
+.cat-photo-btn:active {
+  transform: scale(0.95);
+}
+
+/* 再生中はより楽しく揺れる */
+.cat-card.is-playing .cat-photo {
+  animation: catDance 0.8s ease-in-out infinite;
+  border-color: var(--color-mint-dark);
+}
+
+@keyframes catDance {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  25% { transform: translateY(-6px) rotate(4deg); }
+  50% { transform: translateY(-3px) rotate(-3deg); }
+  75% { transform: translateY(-7px) rotate(3deg); }
+}
+
+/* 旧wiggleとgentleSwing（互換性のため残す） */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+/* 猫の情報 */
+.cat-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cat-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cat-meta {
+  font-size: 12px;
+  color: var(--color-text-soft);
+  margin-top: 2px;
+  display: inline-block;
+  padding: 2px 10px;
+  background: linear-gradient(135deg, #fff5f1 0%, #ffe4e9 100%);
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+}
+
+[data-theme="dark"] .cat-meta {
+  background: linear-gradient(135deg, #5c3d4c 0%, #4a2a35 100%);
+  color: var(--color-accent-dark);
+}
+
+/* 猫カードのボタン群 */
+.cat-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: #fff5f1;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+[data-theme="dark"] .icon-btn {
+  background: #5c3d4c;
+}
+
+.icon-btn:hover {
+  background: var(--color-accent);
+  color: white;
+  transform: scale(1.1);
+}
+
+.icon-btn.play-btn {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--color-mint) 0%, var(--color-mint-dark) 100%);
+  color: white;
+  font-size: 20px;
+  box-shadow: 0 4px 12px rgba(109, 200, 163, 0.3);
+}
+
+.icon-btn.play-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(109, 200, 163, 0.4);
+}
+
+.cat-card.is-playing .play-btn {
+  background: linear-gradient(135deg, #ff9eae 0%, #ef7d92 100%);
+  box-shadow: 0 4px 12px rgba(255, 158, 174, 0.4);
+}
+
+.icon-btn.fav-btn.is-favorite {
+  background: var(--color-yellow);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* 空っぽの時のメッセージ */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  border: 3px dashed var(--color-border);
+  margin-top: 8px;
+}
+
+.empty-cat {
+  width: 160px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  animation: bounce 2s ease-in-out infinite;
+  /* ダークモードでも猫がはっきり見えるよう */
+  filter: drop-shadow(0 4px 8px rgba(255, 158, 174, 0.2));
+}
+
+[data-theme="dark"] .empty-cat {
+  /* ダークモードでは猫を明るく */
+  filter: drop-shadow(0 4px 8px rgba(255, 158, 174, 0.3)) brightness(1.1);
+}
+
+.empty-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-top: 12px;
+}
+
+.empty-hint {
+  font-size: 14px;
+  color: var(--color-text-soft);
+  margin-top: 8px;
+}
+
+/* 「猫を追加」ボタン */
+.add-btn {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 28px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #ff9eae 0%, #ffb380 100%);
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(255, 158, 174, 0.5);
+  z-index: 10;
+  transition: all 0.2s;
+}
+
+.add-btn:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 12px 28px rgba(255, 158, 174, 0.6);
+}
+
+.add-btn:active {
+  transform: translateX(-50%) translateY(0);
+}
+
+.add-btn-plus {
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* モーダル */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal[hidden] { display: none; }
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(74, 56, 56, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  position: relative;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-medium);
+  border: 3px solid var(--color-border);
+  animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.modal-title::before {
+  content: "🐱 ";
+}
+
+/* フォーム */
+.form-group { margin-bottom: 18px; }
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.required {
+  color: var(--color-accent);
+  font-size: 13px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--color-text);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: #fffafb;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+[data-theme="dark"] .form-input {
+  background: #382530;
+}
+
+.form-input:focus {
+  border-color: var(--color-accent);
+  background: white;
+}
+
+[data-theme="dark"] .form-input:focus {
+  background: #4a2a35;
+}
+
+.form-file {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--color-text-soft);
+}
+
+.form-hint {
+  font-size: 12px;
+  color: var(--color-text-soft);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* 写真プレビュー */
+.photo-preview {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fff5f1 0%, #ffe4e9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+  margin: 0 auto 8px;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(255, 158, 174, 0.2);
+  overflow: hidden;
+}
+
+[data-theme="dark"] .photo-preview {
+  background: linear-gradient(135deg, #4a2a35 0%, #3a2530 100%);
+  border-color: var(--color-card);
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 音声プレビュー */
+.audio-preview {
+  padding: 12px 16px;
+  background: #fffafb;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+[data-theme="dark"] .audio-preview {
+  background: #382530;
+}
+
+.audio-status {
+  font-size: 13px;
+  color: var(--color-text-soft);
+}
+
+.audio-status.has-file {
+  color: var(--color-mint-dark);
+  font-weight: 700;
+}
+
+.audio-status.has-file::before {
+  content: "🎵 ";
+}
+
+/* フォームのボタン */
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px 20px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, var(--color-mint) 0%, var(--color-mint-dark) 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(109, 200, 163, 0.3);
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(109, 200, 163, 0.4);
+}
+
+.btn-cancel {
+  background: #f5e9ea;
+  color: var(--color-text-soft);
+}
+
+[data-theme="dark"] .btn-cancel {
+  background: #4a3540;
+  color: var(--color-text-soft);
+}
+
+.btn-cancel:hover {
+  background: #ead8da;
+}
+
+[data-theme="dark"] .btn-cancel:hover {
+  background: #5c3d4c;
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #ff9999 0%, var(--color-danger) 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 126, 126, 0.3);
+}
+
+.btn-delete:hover {
+  transform: translateY(-2px);
+}
+
+/* モーダル内の削除セクション */
+.modal-delete-section {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--color-border);
+}
+
+.modal-delete-section .btn {
+  width: 100%;
+}
+
+/* 共有メニュー */
+.share-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.share-menu[hidden] { display: none; }
+
+.share-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(74, 56, 56, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.share-content {
+  position: relative;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-medium);
+  border: 3px solid var(--color-border);
+  animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.share-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 12px;
+}
+
+.share-title::before {
+  content: "💌 ";
+}
+
+.share-hint {
+  font-size: 13px;
+  color: var(--color-text-soft);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.share-content .btn {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+/* 確認ダイアログ */
+.confirm-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.confirm-dialog[hidden] { display: none; }
+
+.confirm-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(74, 56, 56, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.confirm-content {
+  position: relative;
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-medium);
+  border: 3px solid var(--color-border);
+  animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.confirm-message {
+  font-size: 15px;
+  color: var(--color-text);
+  margin-bottom: 16px;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* フッター */
+.app-footer {
+  margin-top: 32px;
+  text-align: center;
+  padding: 20px 16px;
+}
+
+.footer-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.footer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-soft);
+  background: white;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+[data-theme="dark"] .footer-btn {
+  background: var(--color-card);
+}
+
+.footer-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-dark);
+  background: #fffafb;
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .footer-btn:hover {
+  background: #4a2a35;
+}
+
+.credits {
+  font-size: 11px;
+  color: var(--color-text-soft);
+  line-height: 1.6;
+  opacity: 0.7;
+}
+
+.credits .tagline {
+  display: block;
+  font-size: 13px;
+  color: var(--color-accent-dark);
+  margin-bottom: 8px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* スマホでより使いやすく */
+@media (max-width: 480px) {
+  /* 横方向のはみ出し防止 */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  body {
+    /* iPhone のセーフエリア対応（ノッチ・ホームバー） */
+    padding-bottom: calc(120px + env(safe-area-inset-bottom));
+  }
+
+  .app-header {
+    padding: 28px 16px 16px;
+  }
+
+  .app-header h1 {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .theme-toggle {
+    top: 20px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .app-main {
+    padding: 0 10px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .controls {
+    padding: 14px 16px;
+  }
+
+  .control-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .control-label {
+    min-width: 72px;
+    font-size: 13px;
+  }
+
+  /* フィルターバーは3つで小さくなりがちなので調整 */
+  .filter-bar {
+    gap: 6px;
+    padding: 0 2px;
+  }
+
+  .filter-btn {
+    padding: 9px 8px;
+    font-size: 12px;
+    /* タップ領域は44px以上保つ */
+    min-height: 44px;
+  }
+
+  .badge-soon {
+    font-size: 8px;
+    padding: 1px 4px;
+    margin-left: 2px;
+  }
+
+  /* 猫カード：スマホ用にコンパクト */
+  .cat-card {
+    padding: 12px;
+    gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .cat-photo {
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+    border-width: 2px;
+  }
+
+  .cat-info {
+    min-width: 0;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .cat-name {
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+  .cat-meta {
+    font-size: 10px;
+    padding: 1px 8px;
+    margin-top: 3px;
+  }
+
+  /* 削除ボタンはスマホでは非表示（編集モーダル内に配置） */
+  .icon-btn.delete-btn {
+    display: none;
+  }
+
+  /* スマホでの4つのアクション（お気に入り・共有・編集・再生） */
+  .cat-actions {
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .icon-btn.play-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+    margin-left: 2px;
+  }
+
+  /* アニメーションの揺れも小さく（はみ出し防止）*/
+  @keyframes catFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-2px) rotate(0.5deg); }
+  }
+
+  /* 「猫を追加」ボタンもセーフエリア対応 */
+  .add-btn {
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    padding: 14px 26px;
+    font-size: 15px;
+  }
+
+  /* モーダルも調整 */
+  .modal-content {
+    padding: 24px 20px;
+  }
+
+  .modal-title {
+    font-size: 18px;
+  }
+
+  /* 共有メニュー・確認ダイアログもセーフエリア対応 */
+  .modal,
+  .share-menu,
+  .confirm-dialog {
+    padding: calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));
+  }
+
+  /* コミュニティセクションも調整 */
+  .community-coming-soon {
+    padding: 32px 18px;
+  }
+
+  .community-title {
+    font-size: 18px;
+  }
+
+  .community-icon {
+    font-size: 56px;
+  }
+}
+
+/* iPhoneの最小幅（SE等）対応 */
+@media (max-width: 375px) {
+  .filter-btn {
+    padding: 9px 4px;
+    font-size: 11px;
+  }
+
+  .add-btn {
+    padding: 14px 22px;
+    font-size: 14px;
+  }
+
+  /* さらにギュッと */
+  .cat-card {
+    padding: 9px 10px;
+    gap: 6px;
+  }
+
+  .cat-photo {
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+  }
+
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .icon-btn.play-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+}
+
+/* 非表示ユーティリティ */
+.is-hidden { display: none !important; }

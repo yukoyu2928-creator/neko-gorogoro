@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f9d5d3" />
+  <title>ねこゴロゴロ癒し 🐾</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <button class="theme-toggle" id="theme-toggle" aria-label="ダークモード切替" title="ダークモード切替">
+      🌙
+    </button>
+    <h1><img class="title-cat" src="mascot.png" alt="" />ねこゴロゴロ癒し</h1>
+    <p class="subtitle">愛猫の声、ずっと一緒に。</p>
+  </header>
+
+  <main class="app-main">
+
+    <!-- コントロールパネル：音量とタイマー -->
+    <section class="controls" aria-label="再生コントロール">
+
+      <div class="control-row">
+        <label class="control-label" for="volume">
+          <span class="control-icon">🔊</span>
+          <span class="control-text">音量</span>
+        </label>
+        <input
+          type="range"
+          id="volume"
+          min="0"
+          max="100"
+          value="70"
+          aria-label="音量を調整"
+        />
+        <span class="control-value" id="volume-value">70%</span>
+      </div>
+
+      <div class="control-row">
+        <label class="control-label" for="timer">
+          <span class="control-icon">⏱️</span>
+          <span class="control-text">タイマー</span>
+        </label>
+        <select id="timer" aria-label="自動停止までの時間">
+          <option value="0">なし（ずっと再生）</option>
+          <option value="300">5分</option>
+          <option value="600">10分</option>
+          <option value="1800">30分</option>
+          <option value="3600">60分</option>
+        </select>
+        <span class="control-value" id="timer-remaining"></span>
+      </div>
+
+    </section>
+
+    <!-- タブ切り替え -->
+    <section class="filter-bar" aria-label="表示の切り替え">
+      <button class="filter-btn is-active" data-filter="all">
+        🐱 ねこ
+      </button>
+      <button class="filter-btn" data-filter="favorites">
+        ⭐ お気に入り
+      </button>
+      <button class="filter-btn" data-filter="music">
+        🎵 音楽
+      </button>
+      <button class="filter-btn" data-filter="community">
+        🌍 みんな
+        <span class="badge-soon">近日</span>
+      </button>
+    </section>
+
+    <!-- 猫リスト -->
+    <section class="cat-list" id="cat-list" aria-label="猫の音一覧">
+      <!-- ここにJavaScriptで猫カードが追加されます -->
+    </section>
+
+    <!-- 音楽リスト -->
+    <section class="cat-list is-hidden" id="music-list" aria-label="癒し音楽一覧">
+      <!-- ここにJavaScriptで音楽カードが追加されます -->
+    </section>
+
+    <!-- 何も無いときに出すメッセージ -->
+    <section class="empty-state" id="empty-state">
+      <img class="empty-cat" src="mascot.png" alt="ねこゴロゴロ" />
+      <p class="empty-title">まだ猫がいません</p>
+      <p class="empty-hint">
+        下の「＋ 猫を追加」ボタンから、<br />
+        あなたの猫を登録してみてください
+      </p>
+    </section>
+
+    <!-- 「みんなの猫」コミュニティタブ：近日公開プレースホルダー -->
+    <section class="community-coming-soon is-hidden" id="community-section">
+      <div class="community-icon">🌍</div>
+      <h2 class="community-title">みんなの猫、近日公開！</h2>
+      <p class="community-lead">
+        世界中のねこちゃんのゴロゴロが<br />
+        集まる、癒しのコミュニティ
+      </p>
+      <ul class="community-features">
+        <li>📤 あなたの愛猫の音を投稿できる</li>
+        <li>🎵 他の人の癒しの音を聴ける</li>
+        <li>⭐ お気に入りに登録して保存</li>
+        <li>🤖 AIで自動的に安全チェック</li>
+      </ul>
+      <div class="community-cta">
+        <p class="cta-hint">準備中です。お楽しみに！</p>
+        <p class="cta-sub">公開時期: 検討中（数ヶ月後を予定）</p>
+      </div>
+    </section>
+
+    <!-- フッター：管理ボタンとクレジット -->
+    <footer class="app-footer">
+      <div class="footer-buttons">
+        <button class="footer-btn" id="backup-btn">
+          💝 あなたの猫をバックアップ
+        </button>
+        <label class="footer-btn" for="restore-input">
+          📂 バックアップから復元
+          <input
+            type="file"
+            id="restore-input"
+            accept=".json,application/json"
+            class="is-hidden"
+          />
+        </label>
+        <button class="footer-btn" id="reset-defaults-btn">
+          🔄 デフォルト8匹を復元
+        </button>
+      </div>
+      <p class="credits">
+        <span class="tagline">— 大切な存在を、いつまでも。 —</span>
+        音源クレジット: BigSoundBank (CC0) / Orange Free Sounds (CC-BY 4.0 by Alexander)
+      </p>
+    </footer>
+
+  </main>
+
+  <!-- 猫を追加するボタン（画面下に固定） -->
+  <button class="add-btn" id="add-btn" aria-label="猫を追加">
+    <span class="add-btn-plus">＋</span>
+    <span class="add-btn-text">猫を追加</span>
+  </button>
+
+  <!-- 猫を追加・編集するためのフォーム（モーダル） -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal-content" role="dialog" aria-labelledby="modal-title">
+
+      <h2 class="modal-title" id="modal-title">猫を追加</h2>
+
+      <form id="cat-form">
+
+        <!-- 名前 -->
+        <div class="form-group">
+          <label for="cat-name" class="form-label">
+            猫の名前 <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="cat-name"
+            name="name"
+            class="form-input"
+            placeholder="例：ミケちゃん"
+            required
+            maxlength="30"
+          />
+        </div>
+
+        <!-- 種類 -->
+        <div class="form-group">
+          <label for="cat-breed" class="form-label">
+            猫の種類（任意）
+          </label>
+          <input
+            type="text"
+            id="cat-breed"
+            name="breed"
+            class="form-input"
+            placeholder="例：三毛猫、シャム、雑種など"
+            maxlength="30"
+          />
+        </div>
+
+        <!-- 写真 -->
+        <div class="form-group">
+          <label for="cat-photo" class="form-label">
+            写真（任意）
+          </label>
+          <div class="photo-preview" id="photo-preview">
+            <span class="photo-placeholder">🐱</span>
+          </div>
+          <input
+            type="file"
+            id="cat-photo"
+            name="photo"
+            class="form-file"
+            accept="image/*"
+          />
+          <p class="form-hint">スマホで撮った写真でもOKです</p>
+        </div>
+
+        <!-- 音声 -->
+        <div class="form-group">
+          <label for="cat-audio" class="form-label">
+            ゴロゴロ音 <span class="required">*</span>
+          </label>
+          <div class="audio-preview" id="audio-preview">
+            <span class="audio-status">音声ファイルを選んでください</span>
+          </div>
+          <input
+            type="file"
+            id="cat-audio"
+            name="audio"
+            class="form-file"
+            accept="audio/*"
+            required
+          />
+          <p class="form-hint">
+            mp3、m4a、wav などの音声ファイル<br />
+            （スマホで録音した音もOK）
+          </p>
+        </div>
+
+        <!-- ボタン -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" id="cancel-btn">
+            キャンセル
+          </button>
+          <button type="submit" class="btn btn-save">
+            保存する
+          </button>
+        </div>
+
+        <!-- 削除ボタン（編集モードのみ表示） -->
+        <div class="modal-delete-section is-hidden" id="modal-delete-section">
+          <button type="button" class="btn btn-delete" id="modal-delete-btn">
+            🗑️ この猫を削除する
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- 共有メニュー（個別の猫から呼び出される） -->
+  <div class="share-menu" id="share-menu" hidden>
+    <div class="share-overlay" id="share-overlay"></div>
+    <div class="share-content">
+      <h3 class="share-title">この猫の音を共有</h3>
+      <p class="share-hint">
+        音声ファイルをダウンロードできます。<br />
+        LINE、AirDrop、メールなどで送れます。
+      </p>
+      <button class="btn btn-save" id="download-btn">
+        💾 音声ファイルをダウンロード
+      </button>
+      <button class="btn btn-cancel" id="share-close-btn">
+        閉じる
+      </button>
+    </div>
+  </div>
+
+  <!-- 削除確認ダイアログ -->
+  <div class="confirm-dialog" id="confirm-dialog" hidden>
+    <div class="confirm-overlay"></div>
+    <div class="confirm-content">
+      <p class="confirm-message" id="confirm-message">本当に削除しますか？</p>
+      <div class="form-actions">
+        <button class="btn btn-cancel" id="confirm-no">キャンセル</button>
+        <button class="btn btn-delete" id="confirm-yes">削除する</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
