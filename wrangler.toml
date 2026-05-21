@@ -1,8 +1,0 @@
-name = "neko-gorogoro"
-compatibility_date = "2024-10-22"
-pages_build_output_dir = "."
-
-# R2バケット（猫の音声と写真の保管場所）
-[[r2_buckets]]
-binding = "NEKO_BUCKET"
-bucket_name = "neko-gorogoro"
